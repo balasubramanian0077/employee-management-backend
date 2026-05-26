@@ -3,6 +3,7 @@ package com.bala.employeemanagement.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -59,16 +60,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(
-                    "/api/auth/login",
-                    "/api/users/register",
-                    "/api/password-reset/send-otp",
-                    "/api/password-reset/verify-otp",
-                    "/api/password-reset/reset-password",
-                    "/uploads/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
+    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // ✅ allow preflight requests
+    .requestMatchers(
+        "/api/auth/login",
+        "/api/users/register",
+        "/api/password-reset/send-otp",
+        "/api/password-reset/verify-otp",
+        "/api/password-reset/reset-password",
+        "/uploads/**"
+    ).permitAll()
+    .anyRequest().authenticated()
+)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
