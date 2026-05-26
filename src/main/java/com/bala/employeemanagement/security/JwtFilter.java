@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import io.jsonwebtoken.ExpiredJwtException;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -26,12 +26,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // List of public endpoints that should not be filtered
+    // List of public endpoints (no authentication required)
     private static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
         "/api/auth/login",
         "/api/users/register",
-        "/api/auth/forgot-password",
-        "/api/auth/reset-password"
+        "/api/password-reset/send-otp",
+        "/api/password-reset/verify-otp",
+        "/api/password-reset/reset-password"
     );
 
     @Override
@@ -40,7 +41,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        // Skip JWT processing for public endpoints
+        // 1. Skip OPTIONS preflight requests entirely
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // 2. Skip public endpoints without token validation
         if (PUBLIC_ENDPOINTS.contains(requestURI)) {
             chain.doFilter(request, response);
             return;
