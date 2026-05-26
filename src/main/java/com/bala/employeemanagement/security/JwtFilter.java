@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // List of public endpoints (no authentication required)
+    // Public endpoints that do not require JWT token
     private static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
         "/api/auth/login",
         "/api/users/register",
@@ -39,22 +39,26 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
-
-        // 1. Skip OPTIONS preflight requests entirely
+        // 1. Immediately skip OPTIONS preflight requests (no token, no processing)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 2. Skip public endpoints without token validation
+        // 2. Normalize URI (remove trailing slash if present)
+        String requestURI = request.getRequestURI();
+        if (requestURI.endsWith("/")) {
+            requestURI = requestURI.substring(0, requestURI.length() - 1);
+        }
+
+        // 3. Skip JWT processing for public endpoints
         if (PUBLIC_ENDPOINTS.contains(requestURI)) {
             chain.doFilter(request, response);
             return;
         }
 
+        // 4. For all other requests, validate JWT token
         final String authorizationHeader = request.getHeader("Authorization");
-
         String username = null;
         String jwt = null;
 

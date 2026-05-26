@@ -44,7 +44,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
             "http://127.0.0.1:5500",
             "http://localhost:5500",
-            "https://employee-interface.netlify.app"   // 🔁 REPLACE THIS LINE – add your Netlify URL
+            "https://employee-interface.netlify.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -60,17 +60,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // ✅ allow preflight requests
-    .requestMatchers(
-        "/api/auth/login",
-        "/api/users/register",
-        "/api/password-reset/send-otp",
-        "/api/password-reset/verify-otp",
-        "/api/password-reset/reset-password",
-        "/uploads/**"
-    ).permitAll()
-    .anyRequest().authenticated()
-)
+                // 1. Allow all OPTIONS preflight requests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // 2. Public endpoints
+                .requestMatchers(
+                    "/api/auth/login",
+                    "/api/users/register",
+                    "/api/password-reset/send-otp",
+                    "/api/password-reset/verify-otp",
+                    "/api/password-reset/reset-password",
+                    "/uploads/**"
+                ).permitAll()
+                // 3. Everything else requires authentication
+                .anyRequest().authenticated()
+            )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
