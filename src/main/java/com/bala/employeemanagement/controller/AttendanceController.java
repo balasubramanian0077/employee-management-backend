@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
+@CrossOrigin(origins = "https://employee-interface.netlify.app", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/attendance")
 public class AttendanceController {

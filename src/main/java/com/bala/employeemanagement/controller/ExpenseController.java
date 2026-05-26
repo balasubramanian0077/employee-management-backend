@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+@CrossOrigin(origins = "https://employee-interface.netlify.app", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {

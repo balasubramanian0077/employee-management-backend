@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin(origins = "https://employee-interface.netlify.app", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/leave")
 public class LeaveController {

@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "https://employee-interface.netlify.app", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/reports")
 public class ReportController {

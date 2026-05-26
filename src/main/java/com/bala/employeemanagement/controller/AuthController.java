@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+@CrossOrigin(origins = "https://employee-interface.netlify.app", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
